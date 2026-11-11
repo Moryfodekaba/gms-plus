@@ -72,7 +72,7 @@ CREATE TABLE activity_logs (
 
 -- Mot de passe initial : ChangeMe123! (à changer après connexion)
 INSERT INTO admins (name,email,password_hash)
-VALUES ('Administrateur GMS PLUS','admin@gmsplus.local',
+VALUES ('Administrateur GMS PLUS','',
 '$2y$12$9RE07bmItCc/1JAlCOht6.zQhZ86KUsX.0yEN2HQTljYDMpTPmECK');
 
 INSERT INTO settings (setting_key,setting_value) VALUES
