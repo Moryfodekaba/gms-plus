@@ -1,0 +1,8 @@
+<?php
+require_once __DIR__ . '/../../config/config.php'; require_admin();
+$allowed=['Nouvelle','En cours','Acceptée','Refusée','Terminée'];
+if($_SERVER['REQUEST_METHOD']==='POST'){verify_csrf();$status=$_POST['status']??'';if(in_array($status,$allowed,true)){db()->prepare('UPDATE quote_requests SET status=? WHERE id=?')->execute([$status,(int)$_POST['id']]);}header('Location: requests.php');exit;}
+$items=db()->query('SELECT * FROM quote_requests ORDER BY created_at DESC')->fetchAll();include '_header.php'; ?>
+<div class="admin-title"><span class="eyebrow">RELATION CLIENT</span><h1>Demandes de devis</h1><p>Suivez les demandes envoyées depuis le site public.</p></div><div class="panel"><div class="table-wrap"><table><thead><tr><th>Client</th><th>Contact</th><th>Service</th><th>Trajet / Site</th><th>Besoin</th><th>Statut</th><th>Date</th></tr></thead><tbody>
+<?php foreach($items as $it): ?><tr><td><?= e($it['full_name']) ?></td><td><?= e($it['phone']) ?><br><?= e($it['email']) ?></td><td><?= e($it['service_type']) ?></td><td><?= e($it['origin']) ?> → <?= e($it['destination']) ?></td><td><?= e($it['details']) ?></td><td><form method="post" class="status-form"><input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>"><input type="hidden" name="id" value="<?= $it['id'] ?>"><select name="status" onchange="this.form.submit()"><?php foreach($allowed as $st): ?><option <?= $it['status']===$st?'selected':'' ?>><?= e($st) ?></option><?php endforeach; ?></select></form></td><td><?= e($it['created_at']) ?></td></tr><?php endforeach; ?>
+<?php if(!$items): ?><tr><td colspan="7">Aucune demande reçue.</td></tr><?php endif; ?></tbody></table></div></div><?php include '_footer.php'; ?>

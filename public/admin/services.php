@@ -1,0 +1,15 @@
+<?php
+require_once __DIR__ . '/../../config/config.php'; require_admin();
+if($_SERVER['REQUEST_METHOD']==='POST'){verify_csrf();$action=$_POST['action']??'';
+ if($action==='delete'){db()->prepare('DELETE FROM services WHERE id=?')->execute([(int)$_POST['id']]);}
+ elseif($action==='save'){$id=(int)($_POST['id']??0);$cat=in_array($_POST['category']??'', ['transport','security'],true)?$_POST['category']:'transport';$title=trim($_POST['title']??'');$desc=trim($_POST['description']??'');if($title!==''){if($id){db()->prepare('UPDATE services SET category=?,title=?,description=?,is_active=? WHERE id=?')->execute([$cat,$title,$desc,isset($_POST['is_active'])?1:0,$id]);}else{db()->prepare('INSERT INTO services(category,title,description,is_active) VALUES(?,?,?,1)')->execute([$cat,$title,$desc]);}}}
+ header('Location: services.php');exit;
+}
+$edit=null;if(isset($_GET['edit'])){$st=db()->prepare('SELECT * FROM services WHERE id=?');$st->execute([(int)$_GET['edit']]);$edit=$st->fetch();}
+$items=db()->query('SELECT * FROM services ORDER BY category,sort_order,id')->fetchAll();include '_header.php'; ?>
+<div class="admin-title"><span class="eyebrow">CATALOGUE</span><h1>Gestion des services</h1></div>
+<form class="panel editor-form" method="post"><input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>"><input type="hidden" name="action" value="save"><input type="hidden" name="id" value="<?= (int)($edit['id']??0) ?>">
+<label>Catégorie<select name="category"><option value="transport" <?= (($edit['category']??'')==='transport')?'selected':'' ?>>Transport</option><option value="security" <?= (($edit['category']??'')==='security')?'selected':'' ?>>Sécurité</option></select></label>
+<label>Nom du service<input name="title" required value="<?= e($edit['title']??'') ?>"></label><label>Description<textarea name="description" rows="3"><?= e($edit['description']??'') ?></textarea></label><?php if($edit): ?><label class="check"><input type="checkbox" name="is_active" <?= $edit['is_active']?'checked':'' ?>> Visible sur le site</label><?php endif; ?><button class="btn"> <?= $edit?'Mettre à jour':'Ajouter le service' ?> </button><?php if($edit): ?><a href="services.php">Annuler</a><?php endif; ?></form>
+<div class="panel"><div class="table-wrap"><table><thead><tr><th>Catégorie</th><th>Service</th><th>Description</th><th>Visible</th><th>Actions</th></tr></thead><tbody><?php foreach($items as $it): ?><tr><td><?= e($it['category']) ?></td><td><?= e($it['title']) ?></td><td><?= e($it['description']) ?></td><td><?= $it['is_active']?'Oui':'Non' ?></td><td><a href="?edit=<?= $it['id'] ?>">Modifier</a><form class="inline" method="post" onsubmit="return confirm('Supprimer ce service ?')"><input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>"><input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="<?= $it['id'] ?>"><button class="link-danger">Supprimer</button></form></td></tr><?php endforeach; ?></tbody></table></div></div>
+<?php include '_footer.php'; ?>

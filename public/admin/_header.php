@@ -1,0 +1,4 @@
+<?php require_once __DIR__ . '/../../config/config.php'; require_admin(); ?>
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Administration GMS PLUS</title><link rel="stylesheet" href="../assets/css/style.css"></head><body class="admin-body">
+<aside class="sidebar"><a class="brand admin-brand" href="index.php"><span class="brand-mark">GMS+</span><span>Administration</span></a><nav>
+<a href="index.php">Vue générale</a><a href="content.php">Contenus du site</a><a href="services.php">Services</a><a href="vehicles.php">Véhicules</a><a href="requests.php">Demandes de devis</a><a href="messages.php">Messages</a><a href="logout.php">Déconnexion</a></nav></aside><main class="admin-main"><header class="admin-top"><span>Espace de gestion GMS PLUS</span><span><?= e($_SESSION['admin_name'] ?? 'Administrateur') ?></span></header>

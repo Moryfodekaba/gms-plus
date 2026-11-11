@@ -1,0 +1,4 @@
+<?php
+require_once __DIR__ . '/../../config/config.php'; require_admin();
+$items=db()->query('SELECT * FROM contact_messages ORDER BY created_at DESC')->fetchAll();include '_header.php'; ?>
+<div class="admin-title"><span class="eyebrow">MESSAGERIE</span><h1>Messages des visiteurs</h1></div><div class="panel"><div class="table-wrap"><table><thead><tr><th>Nom</th><th>Email</th><th>Téléphone</th><th>Message</th><th>Date</th></tr></thead><tbody><?php foreach($items as $it): ?><tr><td><?= e($it['full_name']) ?></td><td><?= e($it['email']) ?></td><td><?= e($it['phone']) ?></td><td><?= e($it['message']) ?></td><td><?= e($it['created_at']) ?></td></tr><?php endforeach; ?><?php if(!$items): ?><tr><td colspan="5">Aucun message reçu.</td></tr><?php endif; ?></tbody></table></div></div><?php include '_footer.php'; ?>
